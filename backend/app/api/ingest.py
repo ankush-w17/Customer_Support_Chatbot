@@ -38,5 +38,8 @@ async def ingest_file(file: UploadFile = File(...)):
         )
 
     rag_service.ingest_text(text)
+    print("Extracted text length:", len(text))
+    print("Preview:", text[:500])
+
 
     return IngestResponse(status="ingested")
