@@ -11,10 +11,10 @@ rag_service = RAGService()
 
 @router.post("/query", response_model=QueryResponse)
 async def query_rag(request: QueryRequest):
-    # Run sync RAG query in threadpool
+    
     result = await run_in_threadpool(rag_service.query, request.question)
     
-    # Log to MongoDB
+    
     await mongo_db.db.chat_history.insert_one({
         "question": request.question,
         "answer": result["answer"],

@@ -11,7 +11,7 @@ MONGODB_URL = os.getenv("URI")
 DB_NAME = "customer_support_kb"
 
 if not GROQ_API_KEY:
-    # Fallback or warning if Groq is preferred
+    
     print("Warning: GROQ_API_KEY not set. Ensure it provides if using Groq models.")
     if not GOOGLE_API_KEY:
          raise RuntimeError("Neither GROQ_API_KEY nor GOOGLE_API_KEY/GEMINI_API_KEY set")
