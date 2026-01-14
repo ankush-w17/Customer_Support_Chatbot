@@ -49,3 +49,12 @@ uploads/
 documents/
 data/raw/
 data/processed/
+
+
+node_modules/
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.pnpm-debug.log*
