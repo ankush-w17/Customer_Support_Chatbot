@@ -39,13 +39,13 @@ const Ingest = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-      <h2 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-200">
+      <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
         <Upload size={20} />
         Add Knowledge
       </h2>
       
-      <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:bg-slate-50 transition-colors">
+      <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
         <input
           type="file"
           id="file-upload"
@@ -57,13 +57,13 @@ const Ingest = () => {
           htmlFor="file-upload"
           className="cursor-pointer flex flex-col items-center justify-center gap-2"
         >
-          <div className="bg-blue-100 text-blue-600 p-3 rounded-full">
+          <div className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 p-3 rounded-full">
             <FileText size={24} />
           </div>
-          <span className="text-slate-600 font-medium">
+          <span className="text-slate-600 dark:text-slate-400 font-medium">
             {file ? file.name : 'Click to select a file (PDF, DOCX, TXT)'}
           </span>
-          <span className="text-xs text-slate-400">Max size 10MB</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500">Max size 10MB</span>
         </label>
       </div>
 
