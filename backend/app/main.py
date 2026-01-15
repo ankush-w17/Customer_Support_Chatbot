@@ -30,6 +30,29 @@ app.include_router(ingest_router)
 app.include_router(query_router)
 
 
+import os
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+@app.get("/system-status")
+async def system_status():
+    mongo_status = "Disconnected"
+    try:
+        if mongo_db.client:
+            await mongo_db.client.admin.command('ping')
+            mongo_status = "Connected"
+    except Exception:
+        mongo_status = "Disconnected"
+
+    index_path = "faiss_index"
+    faiss_status = "Inactive"
+    if os.path.exists(index_path) and os.path.isdir(index_path):
+        if any(fname.endswith(".faiss") for fname in os.listdir(index_path)):
+             faiss_status = "Active"
+    
+    return {
+        "mongodb": mongo_status,
+        "faiss_index": faiss_status
+    }

@@ -1,51 +1,96 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Chat from './components/Chat';
 import Ingest from './components/Ingest';
-import { Database, MessageSquare } from 'lucide-react';
+import { Database, Activity, Loader2 } from 'lucide-react';
+import api from './api';
 import './App.css'; 
 
 function App() {
+  const [status, setStatus] = useState({
+    mongodb: 'Checking...',
+    faiss_index: 'Checking...'
+  });
+  const [loadingStatus, setLoadingStatus] = useState(true);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const response = await api.get('/system-status');
+        setStatus(response.data);
+      } catch (error) {
+        console.error("Failed to fetch system status", error);
+        setStatus({ mongodb: 'Error', faiss_index: 'Error' });
+      } finally {
+        setLoadingStatus(false);
+      }
+    };
+
+    fetchStatus();
+    
+    const interval = setInterval(fetchStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getStatusColor = (currentStatus) => {
+    if (currentStatus === 'Connected' || currentStatus === 'Active') return 'text-emerald-700 bg-emerald-50 border-emerald-100';
+    if (currentStatus === 'Checking...') return 'text-slate-600 bg-slate-50 border-slate-100';
+    return 'text-red-700 bg-red-50 border-red-100';
+  };
+
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-600 text-white p-2 rounded-lg">
-              <Database size={20} />
+      <header className="sticky top-0 z-20 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white p-1.5 rounded-lg border border-slate-200 shadow-sm">
+               <Database size={18} className="text-brand-600" />
             </div>
-            <h1 className="text-lg font-bold text-slate-800">Knowledge Base Assistant</h1>
+            <h1 className="text-base font-semibold text-slate-900 tracking-tight">
+              Customer Support <span className="text-slate-500 font-normal">Knowledge Base Assistant</span>
+            </h1>
           </div>
-          <nav className="hidden md:flex gap-6">
-            <a href="#" className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-blue-600">
-               Dashboard
-            </a>
-            <a href="#" className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-blue-600">
-               Settings
-            </a>
-          </nav>
         </div>
       </header>
 
-     
-      <main className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-12 gap-8 h-[calc(100vh-4rem)]">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-3.5rem)]">
         
-        
-        <div className="md:col-span-4 lg:col-span-3 space-y-6">
-          <Ingest />
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-            <h3 className="font-semibold text-slate-800 mb-2">System Status</h3>
-            <div className="flex items-center gap-2 text-sm text-green-600">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              Operational
-            </div>
-             <p className="text-xs text-slate-400 mt-2">FAISS Index: Active<br/>MongoDB: Connected</p>
+        <div className="lg:col-span-3 space-y-4 flex flex-col h-full overflow-hidden">
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-3">
+             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 className="font-medium text-slate-900 text-sm flex items-center gap-2">
+                  <Activity size={14} className="text-slate-400" />
+                  System Status
+                </h3>
+                {loadingStatus ? (
+                  <Loader2 size={12} className="animate-spin text-slate-400" />
+                ) : (
+                  <span className="flex h-2 w-2 relative">
+                     <span className={`relative inline-flex rounded-full h-2 w-2 ${status.mongodb === 'Connected' ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+                  </span>
+                )}
+             </div>
+             
+             <div className="space-y-2">
+               <div className="flex items-center justify-between text-xs">
+                 <span className="text-slate-500">FAISS Index</span>
+                 <span className={`px-2 py-0.5 rounded-md text-xs font-medium border ${getStatusColor(status.faiss_index)}`}>
+                    {status.faiss_index}
+                 </span>
+               </div>
+               <div className="flex items-center justify-between text-xs">
+                 <span className="text-slate-500">MongoDB</span>
+                 <span className={`px-2 py-0.5 rounded-md text-xs font-medium border ${getStatusColor(status.mongodb)}`}>
+                    {status.mongodb}
+                 </span>
+               </div>
+             </div>
           </div>
+          
+          <Ingest />
         </div>
 
-        
-        <div className="md:col-span-8 lg:col-span-9 h-[600px] md:h-full">
+        <div className="lg:col-span-9 h-[600px] lg:h-full">
             <Chat />
         </div>
       </main>

@@ -1,15 +1,39 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Custom Scrollbar for Chat */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+@theme {
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --font-sans: "Inter", "system-ui", "sans-serif";
 }
-.overflow-y-auto::-webkit-scrollbar-track {
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f8fafc; 
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
   background: transparent;
 }
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 20px;
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

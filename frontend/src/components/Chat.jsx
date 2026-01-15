@@ -48,68 +48,112 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 rounded-lg shadow-sm border border-slate-200">
-      <div className="p-4 border-b border-slate-200 bg-white rounded-t-lg">
-        <h2 className="text-xl font-semibold text-slate-800">Support Assistant</h2>
-        <p className="text-sm text-slate-500">Ask questions grounded in your knowledge base.</p>
+    <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      
+      <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 border border-brand-100">
+            <Bot size={18} />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-900">Support Assistant</h2>
+            <div className="flex items-center gap-1.5 translate-y-[-1px]">
+               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+               <p className="text-[11px] font-medium text-slate-500">Online</p>
+            </div>
+          </div>
+        </div>
+        <button className="text-xs font-medium text-slate-400 hover:text-brand-600 transition-colors">
+          Clear Chat
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 scroll-smooth bg-slate-50/50">
         {messages.length === 0 && (
-          <div className="text-center text-slate-400 mt-10">
-            <p>No messages yet. Start asking!</p>
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+            <h3 className="text-lg font-semibold text-slate-900">Welcome to Knowledge Base Support</h3>
+            <p className="text-slate-500 max-w-sm text-sm">
+              I can help answer questions based on your documentation.
+            </p> 
+            <div className="flex flex-wrap justify-center gap-2 mt-2">
+               {["Pricing information", "Integration guide", "Product features"].map((suggestion) => (
+                  <button 
+                    key={suggestion}
+                    onClick={() => setInput(suggestion)}
+                    className="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-md text-slate-600 hover:border-brand-600 hover:text-brand-600 transition-colors shadow-sm"
+                  >
+                    {suggestion}
+                  </button>
+               ))}
+            </div>
           </div>
         )}
+
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex items-start gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
+            {msg.role !== 'user' && (
+              <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-brand-600 shrink-0 mt-1 shadow-sm">
+                <Bot size={16} />
+              </div>
+            )}
+
             <div
-              className={`max-w-[80%] rounded-lg p-3 ${
+              className={`max-w-[85%] lg:max-w-[75%] rounded-lg p-4 shadow-sm text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white border border-slate-200 text-slate-800'
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-white border border-slate-200 text-slate-700'
               }`}
             >
-              <div className="flex items-center gap-2 mb-1 opacity-70 text-xs">
-                {msg.role === 'user' ? <User size={12} /> : <Bot size={12} />}
-                <span>{msg.role === 'user' ? 'You' : 'Assistant'}</span>
-                {msg.grounded === false && (
-                    <span className="text-orange-500 font-bold ml-2">(Ungrounded)</span>
-                )}
-              </div>
-              <div className="prose prose-sm max-w-none dark:prose-invert">
+              {msg.grounded === false && (
+                <div className="mb-2 text-amber-600 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                   ⚠️ Ungrounded
+                </div>
+              )}
+              
+              <div className={`prose prose-sm max-w-none ${msg.role === 'user' ? 'prose-invert' : 'prose-slate'}`}>
                 <ReactMarkdown>{msg.content}</ReactMarkdown>
               </div>
             </div>
+
+            {msg.role === 'user' && (
+              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0 mt-1">
+                <User size={16} />
+              </div>
+            )}
           </div>
         ))}
+
         {loading && (
-          <div className="flex justify-start">
-            <div className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-2 text-slate-500">
-              <Loader2 className="animate-spin" size={16} />
-              <span className="text-sm">Thinking...</span>
+          <div className="flex justify-start items-center gap-4">
+             <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-brand-600 shrink-0 shadow-sm">
+                <Bot size={16} />
+              </div>
+            <div className="bg-white border border-slate-200 rounded-lg px-4 py-3 shadow-sm flex items-center gap-2">
+              <Loader2 className="animate-spin text-slate-400" size={16} />
+              <span className="text-sm text-slate-500">Processing...</span>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t border-slate-200 bg-white rounded-b-lg">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+      <div className="p-4 bg-white border-t border-slate-200">
+        <form onSubmit={handleSubmit} className="relative max-w-4xl mx-auto">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your question..."
-            className="flex-1 px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Type your question here..."
+            className="w-full pl-4 pr-12 py-3.5 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-sm shadow-sm transition-all"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="absolute right-2 top-2 p-1.5 bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Send size={18} />
           </button>
